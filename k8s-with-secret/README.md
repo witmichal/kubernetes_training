@@ -1,5 +1,10 @@
 # minikube + kubectl
 
+## ALL IN ONE
+```sh
+./create_deployment_\&_service.sh
+```
+
 ## start minikube
 minikube start
 
@@ -12,9 +17,14 @@ docker build . -t app_with_db:001
 k create namespace test
 ```
 
+## create secret
+```sh
+kubectl create -f ./secret.yaml
+```
+
 ## create deployment
 ```sh
-k create -f deployment-without-secret.yaml
+k create -f deployment.yaml
 k get pods -n test # should display 1 row
 k get deployments -n test # should display 1 row
 k get services -n test # should display NONE rows
