@@ -2,8 +2,17 @@ from typing import Optional
 from flask import Flask
 import psycopg2
 import os
+from pathlib import Path
 
 app = Flask(__name__)
+
+
+def read_env_var(key: str) -> Optional[str]:
+	try:
+		return os.environ[key]
+	except KeyError as e:
+		print(repr(e) + f" - no env var defined: {key}")
+		return None
 
 
 '''
@@ -15,15 +24,27 @@ export DB_PASS=mypassword
 docker run -p 5432:5432 --name postgres-db -e POSTGRES_PASSWORD=mypassword postgres
 psql -h localhost -U postgres -d postgres
 '''
+def build_connection_string() -> str:
+	host = read_env_var('DB_HOST')
+	name = read_env_var('DB_NAME')
+	user = read_env_var('DB_USER')
+	password = read_env_var('DB_PASS')
+
+	creds_mount = "/etc/creds"
+	if password is None:
+		password = Path(f"{creds_mount}/db-password").read_text().strip()
+	if user is None:
+		user = Path(f"{creds_mount}/db-username").read_text().strip()
+
+	return f"dbname='{name}' user='{user}' host='{host}' password='{password}'"
+
+
 def fetch_postgres_version() -> Optional[str]:
 	try:
-		host = os.environ['DB_HOST']
-		name = os.environ['DB_NAME']
-		user = os.environ['DB_USER']
-		password = os.environ['DB_PASS']
-
-		#conn = psycopg2.connect(f"dbname='postgres' user='postgres' host='localhost' password='mypassword'")
-		conn = psycopg2.connect(f"dbname='{name}' user='{user}' host='{host}' password='{password}'")
+		#"dbname='postgres' user='postgres' host='localhost' password='mypassword'"
+		connection_string = build_connection_string()
+		print(f"Connecting to: [{connection_string}]")
+		conn = psycopg2.connect(connection_string)
 		with conn.cursor() as curs:
 			try:
 				curs.execute("SELECT version()")
