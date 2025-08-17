@@ -10,7 +10,7 @@ minikube start
 
 ## publish docker image to minikube docker engine (see https://minikube.sigs.k8s.io/docs/commands/docker-env/)
 eval $(minikube docker-env)
-docker build . -t app_with_db:001
+docker build . -t app_with_db:002
 
 ## create namespace (test)
 ```sh

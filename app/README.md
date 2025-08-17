@@ -19,13 +19,13 @@ curl 0.0.0.0:5000
 ## 3. build image (app dir)
 
 ```sh
-docker build . -t app_with_db:001
+docker build . -t app_with_db:002
 ```
 
 ## 4. start container
 
 ```sh
-docker run -p 8888:5000 -d --name app_with_db app_with_db:001
+docker run -p 8888:5000 -d --name app_with_db app_with_db:002
 curl 0.0.0.0:8888
 ```
 

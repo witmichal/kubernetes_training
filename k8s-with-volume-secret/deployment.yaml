@@ -15,6 +15,10 @@ spec:
       labels:
         app: app-with-db
     spec:
+      volumes:
+        - name: db-creds-mount
+          secret:
+            secretName: app-with-db-secrets
       containers:
         - name: db-postgres
           image: postgres:17.5
@@ -32,18 +36,12 @@ spec:
           ports:
             - containerPort: 5000
               name: flask-port
+          volumeMounts:
+            - mountPath: /etc/creds
+              name: db-creds-mount
+              readOnly: true
           env:
             - name: DB_HOST
               value: 127.0.0.1
             - name: DB_NAME
               value: postgres
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: app-with-db-secrets
-                  key: db-username
-            - name: DB_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: app-with-db-secrets
-                  key: db-password
