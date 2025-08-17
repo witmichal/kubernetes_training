@@ -10,7 +10,7 @@ kubectl create -f ./service-without-secret.yaml
 
 echo
 echo "stream logs (-f, --follow is for opening a stream):"
-echo "# k logs -f -n test services/tapp-with-db"
+echo "# k logs -f -n test services/app-with-db"
 echo
 echo "CTRL+C to kill the tunnel process"
 echo "hit 'curl 127.0.0.1:6666' in separate shell"
