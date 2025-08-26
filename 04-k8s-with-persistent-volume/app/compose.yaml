@@ -1,0 +1,20 @@
+services:
+  svc:
+    image: app_svc:004
+    build:
+      context: .
+      dockerfile: 01_svc.Dockerfile
+    ports:
+      - "8111:5000"
+    environment:
+      DB_HOST: postgres_db # reference to a name of the PG image/service below
+      DB_NAME: visits
+      DB_USER: postgres
+      DB_PASS: mypassword
+  postgres_db:
+    image: app_postgres:004
+    build:
+      context: .
+      dockerfile: 02_db.Dockerfile
+    environment:
+      POSTGRES_PASSWORD: mypassword
