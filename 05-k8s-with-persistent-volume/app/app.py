@@ -40,46 +40,38 @@ def build_connection_string() -> str:
 
 
 def fetch_postgres_version() -> Optional[str]:
-	try:
-		#"dbname='postgres' user='postgres' host='localhost' password='mypassword'"
-		connection_string = build_connection_string()
-		print(f"Connecting to: [{connection_string}]")
-		conn = psycopg2.connect(connection_string)
-		with conn.cursor() as curs:
-			try:
-				curs.execute("SELECT version()")
-				single_row = curs.fetchone()
-				return str(single_row)
-			except (Exception, psycopg2.DatabaseError) as error:
-				print(repr(error))
-	except Exception as e:
-		print(repr(e))
-		print("I am unable to connect to the database")
+	def go(curs) -> str:
+		curs.execute("SELECT version()")
+		single_row = curs.fetchone()
+		return str(single_row)
+	return db_operation(go)
 
 
 def increase_counter_in_db() -> Optional[str]:
-	try:
-		#"dbname='postgres' user='postgres' host='localhost' password='mypassword'"
-		connection_string = build_connection_string()
-		print(f"Connecting to: [{connection_string}]")
-
-		with psycopg2.connect(connection_string) as conn:
-			with conn.cursor() as curs:
-				try:
-					curs.execute("UPDATE visits.visits SET counter = counter + 1")
-					updated_row_count = curs.rowcount
-
-					return str(updated_row_count)
-				except (Exception, psycopg2.DatabaseError) as error:
-					print(repr(error))
-			conn.commit()
-
-	except Exception as e:
-		print(repr(e))
-		print("I am unable to connect to the database")
+	def go(curs) -> str:
+		curs.execute("UPDATE visits.visits SET counter = counter + 1")
+		updated_row_count = curs.rowcount
+		return str(updated_row_count)
+	return db_operation(go)
 
 
 def reset_counter_in_db() -> Optional[str]:
+	def go(curs) -> str:
+		curs.execute("UPDATE visits.visits SET counter = 0")
+		updated_row_count = curs.rowcount
+		return str(updated_row_count)
+	return db_operation(go)
+
+
+def fetch_counter_from_db() -> Optional[str]:
+	def go(curs) -> str:
+		curs.execute("SELECT counter FROM visits.visits")
+		single_row = curs.fetchone()
+		return str(single_row)
+	return db_operation(go)
+
+
+def db_operation(procedure) -> Optional[str]:
 	try:
 		#"dbname='postgres' user='postgres' host='localhost' password='mypassword'"
 		connection_string = build_connection_string()
@@ -88,32 +80,11 @@ def reset_counter_in_db() -> Optional[str]:
 		with psycopg2.connect(connection_string) as conn:
 			with conn.cursor() as curs:
 				try:
-					curs.execute("UPDATE visits.visits SET counter = 0")
-					updated_row_count = curs.rowcount
-
-					return str(updated_row_count)
+					return procedure(curs)
 				except (Exception, psycopg2.DatabaseError) as error:
 					print(repr(error))
 			conn.commit()
 
-	except Exception as e:
-		print(repr(e))
-		print("I am unable to connect to the database")
-
-
-def fetch_counter_from_db() -> Optional[str]:
-	try:
-		#"dbname='postgres' user='postgres' host='localhost' password='mypassword'"
-		connection_string = build_connection_string()
-		print(f"Connecting to: [{connection_string}]")
-		conn = psycopg2.connect(connection_string)
-		with conn.cursor() as curs:
-			try:
-				curs.execute("SELECT counter FROM visits.visits")
-				single_row = curs.fetchone()
-				return str(single_row)
-			except (Exception, psycopg2.DatabaseError) as error:
-				print(error)
 	except Exception as e:
 		print(repr(e))
 		print("I am unable to connect to the database")

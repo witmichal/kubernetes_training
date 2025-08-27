@@ -1,6 +1,6 @@
 services:
   svc:
-    image: app_svc:004
+    image: app_svc:005
     build:
       context: .
       dockerfile: 01_svc.Dockerfile
@@ -12,7 +12,7 @@ services:
       DB_USER: postgres
       DB_PASS: mypassword
   postgres_db:
-    image: app_postgres:004
+    image: app_postgres:005
     build:
       context: .
       dockerfile: 02_db.Dockerfile
