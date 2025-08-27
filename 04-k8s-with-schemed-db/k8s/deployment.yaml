@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-with-db
+  namespace: test
+  labels:
+    app: app-with-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-with-db
+  template: # Pod spec
+    metadata:
+      labels:
+        app: app-with-db
+    spec:
+      volumes:
+        - name: db-creds-mount
+          secret:
+            secretName: app-with-db-secrets
+      containers:
+        - name: db-postgres
+          image: app_postgres:004
+          ports:
+            - containerPort: 5432
+              #name: postgresql-port
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-with-db-secrets
+                  key: db-password
+        - name: db-app
+          image: app_svc:004
+          ports:
+            - containerPort: 5000
+              name: flask-port
+          volumeMounts:
+            - mountPath: /etc/creds
+              name: db-creds-mount
+              readOnly: true
+          env:
+            - name: DB_HOST
+              value: 127.0.0.1
+            - name: DB_NAME
+              value: visits
