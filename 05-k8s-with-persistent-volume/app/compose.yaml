@@ -12,9 +12,13 @@ services:
       DB_USER: postgres
       DB_PASS: mypassword
   postgres_db:
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     image: app_postgres:005
     build:
       context: .
       dockerfile: 02_db.Dockerfile
     environment:
       POSTGRES_PASSWORD: mypassword
+volumes:
+  pgdata:
