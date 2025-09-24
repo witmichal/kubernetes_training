@@ -19,11 +19,7 @@ k create namespace test
 
 ## create secret
 ```sh
-kubectl create -f ./secret.yaml
-```
-
-## create deployment
-```sh
+k create -f ./secret.yaml
 k create -f deployment.yaml
 k get pods -n test # should display 1 row
 k get deployments -n test # should display 1 row
