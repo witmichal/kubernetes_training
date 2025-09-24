@@ -10,7 +10,7 @@ spec:
   selector:
     matchLabels:
       app: app-with-db
-  template: # Pod spec
+  template: # Pod spec # noop
     metadata:
       labels:
         app: app-with-db
